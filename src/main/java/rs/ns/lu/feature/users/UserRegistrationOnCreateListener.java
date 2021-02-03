@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class UserRegistrationFormInit implements TaskListener {
+public class UserRegistrationOnCreateListener implements TaskListener {
 
 	private final FormService formService;
 	private final GenreRepository genreRepository;

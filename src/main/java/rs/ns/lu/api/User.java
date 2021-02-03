@@ -1,7 +1,5 @@
 package rs.ns.lu.api;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class User {
 
-	private String id;
+	private String username;
+	private String password;
 	private String name;
-	private String assignee;
-	private String process;
-	private String processInstanceId;
-	private List<FormField> formFields;
+	private Role role;
 
 }

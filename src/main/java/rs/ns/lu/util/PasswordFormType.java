@@ -6,7 +6,7 @@ public class PasswordFormType extends StringFormType {
 
     @Override
     public String getName() {
-        return ProcessUtil.PASSWORD_FORM_TYPE;
+        return ConstantsUtil.PASSWORD_FORM_TYPE;
     }
 
 }

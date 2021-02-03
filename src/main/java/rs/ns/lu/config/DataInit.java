@@ -8,22 +8,41 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
+import rs.ns.lu.api.Role;
 import rs.ns.lu.feature.users.GenreEntity;
 import rs.ns.lu.feature.users.GenreRepository;
+import rs.ns.lu.feature.users.UserEntity;
+import rs.ns.lu.feature.users.UserRepository;
 
 @Component
 @Transactional
 @AllArgsConstructor
 public class DataInit {
 
+	private final UserRepository userRepository;
 	private final GenreRepository genreRepository;
 
 	@PostConstruct
-	public void initGenres() {
-		final var genre1 = GenreEntity.builder().name("Prvi").build();
-		final var genre2 = GenreEntity.builder().name("Drugi").build();
-		final var genre3 = GenreEntity.builder().name("Treci").build();
-		genreRepository.saveAll(List.of(genre1, genre2, genre3));
+	public void init() {
+		final var admin = UserEntity.builder().firstName("Admin").lastName("Admin").username("admin").password("admin").email("admin@admin.com").city("NS")
+			.country("RS").verified(true).enabled(true).role(Role.ADMIN).build();
+		final var boardMember1 = UserEntity.builder().firstName("Petar").lastName("Petrovic").username("petarboard").password("petar").email("petar@board.com")
+			.city("NS").country("RS").verified(true).enabled(true).role(Role.BOARD).build();
+		final var boardMember2 = UserEntity.builder().firstName("Marko").lastName("Markovic").username("markoboard").password("marko").email("marko@board.com")
+			.city("NS").country("RS").verified(true).enabled(true).role(Role.BOARD).build();
+
+		List.of(admin, boardMember1, boardMember2).forEach(u -> {
+			if (userRepository.findByUsername(u.getUsername()).isEmpty()) {
+				userRepository.save(u);
+			}
+		});
+
+		List.of(GenreEntity.builder().name("Prvi").build(), GenreEntity.builder().name("Drugi").build(), GenreEntity.builder().name("Treci").build())
+			.forEach(g -> {
+				if (genreRepository.findByName(g.getName()).isEmpty()) {
+					genreRepository.save(g);
+				}
+			});
 	}
 
 }

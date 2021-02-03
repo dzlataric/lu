@@ -15,33 +15,44 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import rs.ns.lu.api.FormSubmission;
 import rs.ns.lu.api.Task;
+import rs.ns.lu.api.User;
 import rs.ns.lu.feature.tasks.TaskService;
 import rs.ns.lu.feature.users.UserService;
-import rs.ns.lu.util.ProcessUtil;
+import rs.ns.lu.util.ConstantsUtil;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/registration")
-public class UserRegistrationController {
+@RequestMapping("/user")
+public class UserController {
 
 	private final TaskService taskService;
 	private final UserService userService;
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/registration", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Task> startUserRegistration() {
-		return ResponseEntity.ok(taskService.startProcessAndGetFormFields(ProcessUtil.REGISTRATION_PROCESS_KEY, null));
+		return ResponseEntity.ok(taskService.startProcessAndGetFormFields(ConstantsUtil.REGISTRATION_PROCESS_KEY, null));
 	}
 
-	@PostMapping(value = "/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/registration/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> submitForm(@RequestBody final List<FormSubmission> submittedFields, @PathVariable final String taskId) {
 		taskService.submitForm(submittedFields, taskId);
 		return ResponseEntity.ok().build();
 	}
 
-	@PutMapping(value = "/verify/{code}")
+	@PutMapping(value = "/registration/verify/{code}")
 	public ResponseEntity<Void> verifyUser(@PathVariable final String code) {
 		userService.verifyUser(code);
 		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<User> login(@RequestBody final User loginUser) {
+		return ResponseEntity.ok(userService.loginAndEnrich(loginUser));
+	}
+
+	@GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Task>> getActiveTasks(@PathVariable final String username) {
+		return ResponseEntity.ok(taskService.getActiveUserTasks(username));
 	}
 
 }

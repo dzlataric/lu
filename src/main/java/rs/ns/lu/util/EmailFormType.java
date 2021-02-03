@@ -6,6 +6,6 @@ public class EmailFormType extends StringFormType {
 
     @Override
     public String getName() {
-        return ProcessUtil.EMAIL_FORM_TYPE;
+        return ConstantsUtil.EMAIL_FORM_TYPE;
     }
 }

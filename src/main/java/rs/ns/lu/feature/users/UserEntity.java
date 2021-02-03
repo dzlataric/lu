@@ -1,5 +1,8 @@
 package rs.ns.lu.feature.users;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,16 +10,18 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rs.ns.lu.api.Role;
 
 @Data
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "lu_user")
@@ -52,6 +57,12 @@ public class UserEntity {
 	private Role role;
 
 	@Column
+	private boolean verified;
+
+	@Column
 	private boolean enabled;
+
+	@ManyToMany
+	private Set<GenreEntity> genres = new HashSet<>();
 
 }

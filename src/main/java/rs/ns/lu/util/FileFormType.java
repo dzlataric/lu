@@ -6,7 +6,7 @@ public class FileFormType extends StringFormType {
 
     @Override
     public String getName() {
-        return ProcessUtil.FILE_FORM_TYPE;
+        return ConstantsUtil.FILE_FORM_TYPE;
     }
 
 }
