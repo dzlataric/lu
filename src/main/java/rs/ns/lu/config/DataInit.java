@@ -30,8 +30,10 @@ public class DataInit {
 			.city("NS").country("RS").verified(true).enabled(true).role(Role.BOARD).build();
 		final var boardMember2 = UserEntity.builder().firstName("Marko").lastName("Markovic").username("markoboard").password("marko").email("marko@board.com")
 			.city("NS").country("RS").verified(true).enabled(true).role(Role.BOARD).build();
+		final var boardMember3 = UserEntity.builder().firstName("Jovan").lastName("Jovanovic").username("jovanboard").password("jovan").email("jovan@board.com")
+			.city("NS").country("RS").verified(true).enabled(true).role(Role.BOARD).build();
 
-		List.of(admin, boardMember1, boardMember2).forEach(u -> {
+		List.of(admin, boardMember1, boardMember2, boardMember3).forEach(u -> {
 			if (userRepository.findByUsername(u.getUsername()).isEmpty()) {
 				userRepository.save(u);
 			}

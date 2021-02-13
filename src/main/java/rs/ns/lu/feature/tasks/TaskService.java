@@ -16,4 +16,6 @@ public interface TaskService {
 	void completeTask(String taskId);
 
 	List<Task> getActiveUserTasks(String username);
+
+	Task getTaskById(String taskId);
 }

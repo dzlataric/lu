@@ -12,5 +12,6 @@ public final class ConstantsUtil {
 	public static final String PASSWORD_FORM_TYPE = "password";
 	public static final String CLIENT_VERIFICATION_URL = "http://localhost:4200/verify/";
 	public static final String ACTIVATION_CODE_DELIMITER = ":";
+	public static final String SUPPORTED_FILE_TYPE_EXTENSION = ".pdf";
 
 }

@@ -1,5 +1,6 @@
 package rs.ns.lu.feature.users;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class CreateUserService implements JavaDelegate {
 		userService.save(userEntity);
 		identityService.saveUser(camundaUser);
 		emailService.sendUserConfirmation(execution.getProcessInstanceId(), userEntity);
+		execution.setVariable("uploadedTexts", new ArrayList<String>());
 	}
 
 	private UserEntity buildUserFromProcessVariables(final DelegateExecution execution) {

@@ -32,6 +32,7 @@ class TaskServiceImpl implements TaskService {
 	public Task startProcessAndGetFormFields(final String processKey, final String username) {
 		identityService.setAuthenticatedUserId(username);
 		final var processInstance = runtimeService.startProcessInstanceByKey(processKey);
+		runtimeService.setVariable(processInstance.getId(), "uploaded", 0);
 		final var task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list().stream().findFirst().orElseThrow();
 		final var taskFormData = formService.getTaskFormData(task.getId());
 		return Task.builder()
@@ -74,9 +75,32 @@ class TaskServiceImpl implements TaskService {
 		return getTaskQuery(username)
 			.list()
 			.stream()
-			.map(t -> Task.builder().id(t.getId()).name(t.getName()).assignee(t.getAssignee()).process(t.getProcessDefinitionId())
-				.processInstanceId(t.getProcessInstanceId()).build())
+			.map(t -> Task.builder()
+				.id(t.getId())
+				.name(t.getName())
+				.assignee(t.getAssignee())
+				.process(t.getProcessDefinitionId())
+				.processInstanceId(t.getProcessInstanceId())
+				.variables(runtimeService.getVariables(t.getExecutionId()))
+				.build()
+			)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public Task getTaskById(final String taskId) {
+		final var task = taskService.createTaskQuery().taskId(taskId).singleResult();
+		final var taskFormData = formService.getTaskFormData(task.getId());
+		return Task.builder()
+			.id(task.getId())
+			.name(task.getName())
+			.process(task.getProcessDefinitionId())
+			.processInstanceId(task.getProcessInstanceId())
+			.formFields(taskFormData.getFormFields()
+				.stream()
+				.map(FormField::new)
+				.collect(Collectors.toList()))
+			.build();
 	}
 
 	private TaskQuery getTaskQuery(final String username) {

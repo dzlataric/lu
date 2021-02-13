@@ -32,7 +32,8 @@ class UserServiceImpl implements UserService {
 		if (existing.isEmpty() || !existing.get().getPassword().equals(loginUser.getPassword()) || !existing.get().isVerified()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found or password not matched!");
 		}
-		return User.builder().username(existing.get().getUsername()).name(existing.get().getFirstName() + " " + existing.get().getLastName())
+		return User.builder().id(existing.get().getId()).username(existing.get().getUsername())
+			.name(existing.get().getFirstName() + " " + existing.get().getLastName())
 			.role(existing.get().getRole()).build();
 	}
 
