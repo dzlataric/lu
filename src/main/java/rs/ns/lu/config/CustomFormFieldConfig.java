@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import rs.ns.lu.util.CollectionFormType;
 import rs.ns.lu.util.CollectionMinSizeValidator;
+import rs.ns.lu.util.DependsOnValidator;
 import rs.ns.lu.util.EmailFormType;
 import rs.ns.lu.util.FileFormType;
 import rs.ns.lu.util.PasswordFormType;
@@ -29,6 +30,7 @@ public class CustomFormFieldConfig extends AbstractProcessEnginePlugin {
 		processEngineConfiguration.getCustomFormTypes().add(new PasswordFormType());
 		processEngineConfiguration.getCustomFormTypes().add(new FileFormType());
 		processEngineConfiguration.getCustomFormFieldValidators().put("minElements", CollectionMinSizeValidator.class);
+		processEngineConfiguration.getCustomFormFieldValidators().put("dependsOn", DependsOnValidator.class);
 	}
 
 }

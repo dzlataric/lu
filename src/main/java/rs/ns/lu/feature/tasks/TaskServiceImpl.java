@@ -34,6 +34,7 @@ class TaskServiceImpl implements TaskService {
 		identityService.setAuthenticatedUserId(username);
 		final var processInstance = runtimeService
 			.startProcessInstanceByKey(Role.WRITER == role ? ConstantsUtil.WRITER_REGISTRATION_PROCESS_KEY : ConstantsUtil.READER_REGISTRATION_PROCESS_KEY);
+		runtimeService.setVariable(processInstance.getId(), "role", role.name());
 		if (Role.WRITER == role) {
 			runtimeService.setVariable(processInstance.getId(), "uploaded", 0);
 		}

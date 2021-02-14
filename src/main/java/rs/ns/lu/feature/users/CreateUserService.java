@@ -43,11 +43,13 @@ public class CreateUserService implements JavaDelegate {
 		userService.save(userEntity);
 		identityService.saveUser(camundaUser);
 		emailService.sendUserConfirmation(execution.getProcessInstanceId(), userEntity);
-		execution.setVariable("uploadedTexts", new ArrayList<String>());
+		if (Role.WRITER == userEntity.getRole()) {
+			execution.setVariable("uploadedTexts", new ArrayList<String>());
+		}
 	}
 
 	private UserEntity buildUserFromProcessVariables(final DelegateExecution execution) {
-		return UserEntity.builder()
+		final var builder = UserEntity.builder()
 			.firstName(execution.getVariable("firstName").toString())
 			.lastName(execution.getVariable("lastName").toString())
 			.username(execution.getVariable("username").toString())
@@ -55,11 +57,22 @@ public class CreateUserService implements JavaDelegate {
 			.email(execution.getVariable("email").toString())
 			.city(execution.getVariable("city").toString())
 			.country(execution.getVariable("country").toString())
-			.role(Role.WRITER)
-			.genres(((List<String>) execution.getVariable("genres")).stream().map(id -> genreRepository.findById(Long.valueOf(id))).filter(Optional::isPresent)
+			.role(Role.valueOf(execution.getVariable("role").toString()))
+			.betaReader(execution.getVariable("beta") != null && Boolean.parseBoolean(execution.getVariable("role").toString()))
+			.genres(((List<String>) execution.getVariable("genres")).stream().map(id -> genreRepository.findById(Long.valueOf(id)))
+				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.collect(Collectors.toSet()))
-			.enabled(false)
-			.build();
+			.enabled(false);
+
+		final var betaGenres = execution.getVariable("betaGenres");
+		if (betaGenres != null && betaGenres instanceof List) {
+			builder.betaGenres(((List<String>) betaGenres).stream().map(id -> genreRepository.findById(Long.valueOf(id)))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.collect(Collectors.toSet()));
+		}
+
+		return builder.build();
 	}
 }

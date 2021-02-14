@@ -69,6 +69,12 @@ public class UserEntity {
 	@ManyToMany
 	private Set<GenreEntity> genres = new HashSet<>();
 
+	@Column
+	private boolean betaReader;
+
+	@ManyToMany
+	private Set<GenreEntity> betaGenres = new HashSet<>();
+
 	@OneToMany(
 		mappedBy = "user",
 		cascade = CascadeType.ALL,
