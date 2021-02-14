@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import rs.ns.lu.api.FormSubmission;
+import rs.ns.lu.api.Role;
 import rs.ns.lu.api.Task;
 import rs.ns.lu.api.User;
 import rs.ns.lu.feature.tasks.TaskService;
 import rs.ns.lu.feature.users.UserService;
-import rs.ns.lu.util.ConstantsUtil;
 
 @RestController
 @AllArgsConstructor
@@ -28,9 +28,9 @@ public class UserController {
 	private final TaskService taskService;
 	private final UserService userService;
 
-	@GetMapping(value = "/registration", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Task> startUserRegistration() {
-		return ResponseEntity.ok(taskService.startProcessAndGetFormFields(ConstantsUtil.REGISTRATION_PROCESS_KEY, null));
+	@GetMapping(value = "/registration/{role}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Task> startUserRegistration(@PathVariable("role") final Role role) {
+		return ResponseEntity.ok(taskService.startProcessAndGetFormFields(role, null));
 	}
 
 	@PostMapping(value = "/registration/{taskId}", consumes = MediaType.APPLICATION_JSON_VALUE)

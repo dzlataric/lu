@@ -17,6 +17,7 @@ import rs.ns.lu.api.FormField;
 import rs.ns.lu.api.FormSubmission;
 import rs.ns.lu.api.Role;
 import rs.ns.lu.api.Task;
+import rs.ns.lu.util.ConstantsUtil;
 
 @Slf4j
 @Component
@@ -29,10 +30,13 @@ class TaskServiceImpl implements TaskService {
 	private final IdentityService identityService;
 
 	@Override
-	public Task startProcessAndGetFormFields(final String processKey, final String username) {
+	public Task startProcessAndGetFormFields(final Role role, final String username) {
 		identityService.setAuthenticatedUserId(username);
-		final var processInstance = runtimeService.startProcessInstanceByKey(processKey);
-		runtimeService.setVariable(processInstance.getId(), "uploaded", 0);
+		final var processInstance = runtimeService
+			.startProcessInstanceByKey(Role.WRITER == role ? ConstantsUtil.WRITER_REGISTRATION_PROCESS_KEY : ConstantsUtil.READER_REGISTRATION_PROCESS_KEY);
+		if (Role.WRITER == role) {
+			runtimeService.setVariable(processInstance.getId(), "uploaded", 0);
+		}
 		final var task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list().stream().findFirst().orElseThrow();
 		final var taskFormData = formService.getTaskFormData(task.getId());
 		return Task.builder()

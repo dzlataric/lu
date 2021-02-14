@@ -3,11 +3,12 @@ package rs.ns.lu.feature.tasks;
 import java.util.List;
 
 import rs.ns.lu.api.FormSubmission;
+import rs.ns.lu.api.Role;
 import rs.ns.lu.api.Task;
 
 public interface TaskService {
 
-	Task startProcessAndGetFormFields(String processKey, String username);
+	Task startProcessAndGetFormFields(Role role, String username);
 
 	void submitForm(List<FormSubmission> submittedFields, String taskId);
 
