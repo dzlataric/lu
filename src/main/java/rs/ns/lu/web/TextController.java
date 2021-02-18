@@ -21,7 +21,7 @@ public class TextController {
 
 	@PostMapping("/upload/{userId}/{processInstanceId}/{addMore}")
 	public void uploadContent(@RequestParam("file") @NotNull final MultipartFile file, @PathVariable("userId") final Long userId,
-		@PathVariable("processInstanceId") final String processInstanceId, @PathVariable("addMore") final boolean addMore) {
+		@PathVariable("processInstanceId") final String processInstanceId, @PathVariable("addMore") final Boolean addMore) {
 		textService.upload(file, processInstanceId, userId, addMore);
 	}
 

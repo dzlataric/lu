@@ -55,7 +55,7 @@
               <camunda:constraint name="required" />
             </camunda:validation>
           </camunda:formField>
-          <camunda:formField id="repeatPassword" label="Repeat password" type="password">
+          <camunda:formField id="repeatedPassword" label="Repeat password" type="password">
             <camunda:validation>
               <camunda:constraint name="required" />
               <camunda:constraint name="minlength" config="6" />
@@ -66,14 +66,12 @@
         <camunda:taskListener class="rs.ns.lu.feature.users.UserRegistrationOnCreateListener" event="create" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0icmd0y</bpmn:incoming>
-      <bpmn:incoming>passwordsNotMatching</bpmn:incoming>
-      <bpmn:outgoing>Flow_1ktctvu</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1rkdg4i</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0icmd0y" sourceRef="registrationStartEvent" targetRef="enterAccountData" />
-    <bpmn:sequenceFlow id="Flow_1ktctvu" sourceRef="enterAccountData" targetRef="Gateway_1tw621a" />
     <bpmn:sequenceFlow id="Flow_1vlxe7h" sourceRef="createUser" targetRef="confirmAccount" />
     <bpmn:serviceTask id="createUser" name="Create user" camunda:class="rs.ns.lu.feature.users.CreateUserService">
-      <bpmn:incoming>Flow_0gz5k4g</bpmn:incoming>
+      <bpmn:incoming>Flow_1rkdg4i</bpmn:incoming>
       <bpmn:outgoing>Flow_1vlxe7h</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_0qv92jq" sourceRef="confirmAccount" targetRef="fileUpload" />
@@ -126,6 +124,7 @@
             <camunda:value id="declined" name="Declined" />
             <camunda:value id="uploadMoreTexts" name="Upload more texts" />
           </camunda:formField>
+          <camunda:formField id="comment" label="Comment" type="string" />
         </camunda:formData>
         <camunda:taskListener class="rs.ns.lu.feature.tasks.VotingOnCompleteListener" event="complete" />
         <camunda:taskListener class="rs.ns.lu.feature.tasks.VotingOnCreateListener" event="create" />
@@ -164,6 +163,9 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isAccepted}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="payForMembership" name="Pay for membership" camunda:assignee="${username}">
+      <bpmn:extensionElements>
+        <camunda:taskListener class="rs.ns.lu.feature.tasks.FinishRegistrationListener" event="complete" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0szmqtn</bpmn:incoming>
       <bpmn:outgoing>Flow_1bi08s6</bpmn:outgoing>
     </bpmn:userTask>
@@ -178,7 +180,7 @@
     <bpmn:sequenceFlow id="Flow_1r2ophx" name="User needs to upload additional text" sourceRef="Gateway_1by6kj8" targetRef="Activity_162u6w4">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isReturned}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="Activity_162u6w4" name="Send    upload more texts e-mail" camunda:expression="rs.ns.lu.feature.users.SendUserNeedsMoreTextsService">
+    <bpmn:serviceTask id="Activity_162u6w4" name="Send    upload more texts e-mail" camunda:class="rs.ns.lu.feature.users.SendUserNeedsMoreTextsService">
       <bpmn:incoming>Flow_1r2ophx</bpmn:incoming>
       <bpmn:outgoing>Flow_1nit7pc</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -192,10 +194,10 @@
       <bpmn:incoming>Flow_1nit7pc</bpmn:incoming>
       <bpmn:outgoing>Flow_1debl7x</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:boundaryEvent id="uploadMoreTextsTimer" name="2 mins" attachedToRef="uploadMoreTexts">
+    <bpmn:boundaryEvent id="uploadMoreTextsTimer" name="5 mins" attachedToRef="uploadMoreTexts">
       <bpmn:outgoing>Flow_05co9b9</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_08x9yxk">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2M</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_1nit7pc" sourceRef="Activity_162u6w4" targetRef="uploadMoreTexts" />
@@ -213,20 +215,14 @@
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_1bi08s6" sourceRef="payForMembership" targetRef="Event_07ezddj" />
-    <bpmn:exclusiveGateway id="Gateway_1tw621a">
-      <bpmn:incoming>Flow_1ktctvu</bpmn:incoming>
-      <bpmn:outgoing>Flow_0gz5k4g</bpmn:outgoing>
-      <bpmn:outgoing>passwordsNotMatching</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0gz5k4g" name="Password &#10;OK" sourceRef="Gateway_1tw621a" targetRef="createUser">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${password == repeatPassword}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="passwordsNotMatching" name="Entered passwords are not matching" sourceRef="Gateway_1tw621a" targetRef="enterAccountData">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${password != repeatPassword}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rkdg4i" sourceRef="enterAccountData" targetRef="createUser" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="writer-registration">
+      <bpmndi:BPMNEdge id="Flow_1rkdg4i_di" bpmnElement="Flow_1rkdg4i">
+        <di:waypoint x="410" y="117" />
+        <di:waypoint x="460" y="117" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1bi08s6_di" bpmnElement="Flow_1bi08s6">
         <di:waypoint x="620" y="510" />
         <di:waypoint x="620" y="580" />
@@ -325,35 +321,30 @@
         <di:waypoint x="770" y="117" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1vlxe7h_di" bpmnElement="Flow_1vlxe7h">
-        <di:waypoint x="600" y="117" />
+        <di:waypoint x="560" y="117" />
         <di:waypoint x="630" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ktctvu_di" bpmnElement="Flow_1ktctvu">
-        <di:waypoint x="350" y="117" />
-        <di:waypoint x="375" y="117" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0icmd0y_di" bpmnElement="Flow_0icmd0y">
         <di:waypoint x="215" y="117" />
-        <di:waypoint x="250" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0gz5k4g_di" bpmnElement="Flow_0gz5k4g">
-        <di:waypoint x="425" y="117" />
-        <di:waypoint x="500" y="117" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="438" y="86" width="49" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0qr9zjt_di" bpmnElement="passwordsNotMatching">
-        <di:waypoint x="400" y="142" />
-        <di:waypoint x="400" y="200" />
-        <di:waypoint x="300" y="200" />
-        <di:waypoint x="300" y="157" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="306" y="160" width="90" height="40" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="310" y="117" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="registrationStartEvent">
         <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12hvsd1_di" bpmnElement="enterAccountData">
+        <dc:Bounds x="310" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ke79vi_di" bpmnElement="createUser">
+        <dc:Bounds x="460" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1fmyb7x_di" bpmnElement="confirmAccount">
+        <dc:Bounds x="630" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nb6dss_di" bpmnElement="fileUpload">
+        <dc:Bounds x="770" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0wjvcxx_di" bpmnElement="Gateway_0wjvcxx" isMarkerVisible="true">
+        <dc:Bounds x="905" y="92" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0y5h2c6_di" bpmnElement="setBoardMembers">
         <dc:Bounds x="1030" y="77" width="100" height="80" />
@@ -387,24 +378,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_07ezddj_di" bpmnElement="Event_07ezddj">
         <dc:Bounds x="472" y="562" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_12hvsd1_di" bpmnElement="enterAccountData">
-        <dc:Bounds x="250" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1tw621a_di" bpmnElement="Gateway_1tw621a" isMarkerVisible="true">
-        <dc:Bounds x="375" y="92" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0wjvcxx_di" bpmnElement="Gateway_0wjvcxx" isMarkerVisible="true">
-        <dc:Bounds x="905" y="92" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0nb6dss_di" bpmnElement="fileUpload">
-        <dc:Bounds x="770" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1fmyb7x_di" bpmnElement="confirmAccount">
-        <dc:Bounds x="630" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ke79vi_di" bpmnElement="createUser">
-        <dc:Bounds x="500" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0sddmrk_di" bpmnElement="payForMembershipTimer">
         <dc:Bounds x="552" y="452" width="36" height="36" />

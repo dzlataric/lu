@@ -8,6 +8,7 @@ public final class ConstantsUtil {
 
 	public static final String WRITER_REGISTRATION_PROCESS_KEY = "writer-registration";
 	public static final String READER_REGISTRATION_PROCESS_KEY = "reader-registration";
+	public static final String PUBLISH_BOOK_PROCESS_KEY = "publish-book";
 	public static final String EMAIL_FORM_TYPE = "email";
 	public static final String FILE_FORM_TYPE = "file";
 	public static final String PASSWORD_FORM_TYPE = "password";

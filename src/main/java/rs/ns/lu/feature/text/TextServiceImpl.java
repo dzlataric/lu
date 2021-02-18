@@ -24,31 +24,30 @@ import rs.ns.lu.util.ConstantsUtil;
 @Transactional
 public class TextServiceImpl implements TextService {
 
+	private static final String UPLOADED_COUNT = "uploaded";
+	
 	private final UserRepository userRepository;
 	private final RuntimeService runtimeService;
 
 	@Override
 	@SneakyThrows
-	public void upload(final MultipartFile file, final String processInstanceId, final Long userId, final boolean addMore) {
+	public void upload(final MultipartFile file, final String processInstanceId, final Long userId, final Boolean addMore) {
+		final var originalName = Optional.ofNullable(file.getOriginalFilename()).orElseThrow();
+		final var filepath = Paths.get(originalName);
 		try {
-			final var originalName = Optional.ofNullable(file.getOriginalFilename()).orElseThrow();
-			final var filepath = Paths.get(originalName);
 			file.transferTo(filepath);
 			final var title = originalName.replace(ConstantsUtil.SUPPORTED_FILE_TYPE_EXTENSION, "");
 			final var user = userRepository.findById(userId).orElseThrow();
-			final var oldSize = user.getTexts().size();
-			log.info("Old size: {}", oldSize);
 			user.getTexts().add(TextEntity.builder().user(user).title(title).content(file.getBytes()).build());
 
 			log.info("Uploading file {} for user {}", title, user.getUsername());
 
 			userRepository.save(user);
-			
-			final var newSize = user.getTexts().size();
-			log.info("New size: {}", newSize);
 
-			runtimeService.setVariable(processInstanceId, "uploaded", user.getTexts().size());
-			runtimeService.setVariable(processInstanceId, "addMore", addMore);
+			if (addMore != null) {
+				runtimeService.setVariable(processInstanceId, UPLOADED_COUNT, ((int) runtimeService.getVariable(processInstanceId, UPLOADED_COUNT)) + 1);
+				runtimeService.setVariable(processInstanceId, "addMore", addMore);
+			}
 			Files.delete(filepath);
 		} catch (final IOException | RuntimeException e) {
 			log.error("Error updating text with file content", e);

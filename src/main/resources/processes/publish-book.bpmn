@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_13duxas" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="publish-book" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" camunda:initiator="initiator">
+      <bpmn:outgoing>Flow_0qg0lil</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="enterBookDetails" name="Enter book details" camunda:assignee="${initiator}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="title" label="Title" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="synopsis" label="Synopsis" type="string">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="genre" label="Genre" type="collection">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qg0lil</bpmn:incoming>
+      <bpmn:outgoing>Flow_0h8wafb</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0qg0lil" sourceRef="StartEvent_1" targetRef="enterBookDetails" />
+    <bpmn:sequenceFlow id="Flow_0h8wafb" sourceRef="enterBookDetails" targetRef="sendNewBookAdded" />
+    <bpmn:serviceTask id="sendNewBookAdded" name="Send new book e-mail to main editor" camunda:class="rs.ns.lu.feature.tasks.NewBookAddedService">
+      <bpmn:incoming>Flow_0h8wafb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vk0dsm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0vk0dsm" sourceRef="sendNewBookAdded" targetRef="reviewBook" />
+    <bpmn:userTask id="reviewBook" name="Review book">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="title" label="Review title" type="string" defaultValue="${title}">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="synopsis" label="Review synopsis" type="string" defaultValue="${synopsis}">
+            <camunda:validation>
+              <camunda:constraint name="readonly" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="read" label="Read" type="boolean">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0vk0dsm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1puswum</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_14irdry">
+      <bpmn:incoming>Flow_1puswum</bpmn:incoming>
+      <bpmn:outgoing>Flow_15y7el0</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1l4n9oz</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1puswum" sourceRef="reviewBook" targetRef="Gateway_14irdry" />
+    <bpmn:endEvent id="Event_1p7orxp">
+      <bpmn:incoming>Flow_0oh6qc8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_15y7el0" sourceRef="Gateway_14irdry" targetRef="notifyInitiator">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!read}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0oh6qc8" sourceRef="notifyInitiator" targetRef="Event_1p7orxp" />
+    <bpmn:serviceTask id="notifyInitiator" name="Send book declined to ${initiator}" camunda:expression="rs.ns.lu.feature.tasks.SendBookDeclinedService">
+      <bpmn:incoming>Flow_15y7el0</bpmn:incoming>
+      <bpmn:incoming>Flow_0y81iyh</bpmn:incoming>
+      <bpmn:outgoing>Flow_0oh6qc8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1l4n9oz" sourceRef="Gateway_14irdry" targetRef="Activity_0gi2yq8">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${read}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Activity_0gi2yq8" name="Send &#10;&#34;send script&#34;&#10; e-mail" camunda:expression="rs.ns.lu.feature.tasks.SendScriptService">
+      <bpmn:incoming>Flow_1l4n9oz</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gn7ysf</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1gn7ysf" sourceRef="Activity_0gi2yq8" targetRef="Activity_1lybydp" />
+    <bpmn:userTask id="Activity_1lybydp" name="Upload script" camunda:assignee="${initiator}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="uploadScript" label="Upload script" type="file">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gn7ysf</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Event_1bwi6lt" name="10 mins" attachedToRef="Activity_1lybydp">
+      <bpmn:outgoing>Flow_0y81iyh</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0dsdi2b">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0y81iyh" sourceRef="Event_1bwi6lt" targetRef="notifyInitiator" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="publish-book">
+      <bpmndi:BPMNEdge id="Flow_0qg0lil_di" bpmnElement="Flow_0qg0lil">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="300" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0h8wafb_di" bpmnElement="Flow_0h8wafb">
+        <di:waypoint x="400" y="97" />
+        <di:waypoint x="450" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vk0dsm_di" bpmnElement="Flow_0vk0dsm">
+        <di:waypoint x="550" y="97" />
+        <di:waypoint x="600" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1puswum_di" bpmnElement="Flow_1puswum">
+        <di:waypoint x="700" y="97" />
+        <di:waypoint x="745" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15y7el0_di" bpmnElement="Flow_15y7el0">
+        <di:waypoint x="770" y="122" />
+        <di:waypoint x="770" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0oh6qc8_di" bpmnElement="Flow_0oh6qc8">
+        <di:waypoint x="770" y="250" />
+        <di:waypoint x="770" y="332" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l4n9oz_di" bpmnElement="Flow_1l4n9oz">
+        <di:waypoint x="795" y="97" />
+        <di:waypoint x="870" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gn7ysf_di" bpmnElement="Flow_1gn7ysf">
+        <di:waypoint x="970" y="97" />
+        <di:waypoint x="1050" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0y81iyh_di" bpmnElement="Flow_0y81iyh">
+        <di:waypoint x="1100" y="155" />
+        <di:waypoint x="1100" y="210" />
+        <di:waypoint x="820" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15vuf9v_di" bpmnElement="enterBookDetails">
+        <dc:Bounds x="300" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1m2gmdw_di" bpmnElement="sendNewBookAdded">
+        <dc:Bounds x="450" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1s0c4x5_di" bpmnElement="reviewBook">
+        <dc:Bounds x="600" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_14irdry_di" bpmnElement="Gateway_14irdry" isMarkerVisible="true">
+        <dc:Bounds x="745" y="72" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00rq6ph_di" bpmnElement="notifyInitiator">
+        <dc:Bounds x="720" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qfph1a_di" bpmnElement="Activity_0gi2yq8">
+        <dc:Bounds x="870" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0r42ql2_di" bpmnElement="Activity_1lybydp">
+        <dc:Bounds x="1050" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1p7orxp_di" bpmnElement="Event_1p7orxp">
+        <dc:Bounds x="752" y="332" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_03lbxf2_di" bpmnElement="Event_1bwi6lt">
+        <dc:Bounds x="1082" y="119" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1059.5" y="153" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

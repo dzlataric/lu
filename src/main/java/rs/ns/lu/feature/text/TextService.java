@@ -4,6 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface TextService {
 
-	void upload(MultipartFile file, String processInstanceId, Long userId, boolean addMore);
+	void upload(MultipartFile file, String processInstanceId, Long userId, Boolean addMore);
 
 }

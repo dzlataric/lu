@@ -69,15 +69,13 @@
         <camunda:taskListener class="rs.ns.lu.feature.users.UserRegistrationOnCreateListener" event="create" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0vizril</bpmn:incoming>
-      <bpmn:incoming>Flow_0mb9yzs</bpmn:incoming>
-      <bpmn:outgoing>Flow_0ho2woo</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1rpfhk0</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:endEvent id="Event_06xvf04">
       <bpmn:incoming>Flow_0685fl8</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_0ho2woo" sourceRef="enterReaderAccountData" targetRef="Gateway_1kekvv8" />
     <bpmn:serviceTask id="createReader" name="Create user" camunda:class="rs.ns.lu.feature.users.CreateUserService">
-      <bpmn:incoming>Flow_12zdywa</bpmn:incoming>
+      <bpmn:incoming>Flow_1rpfhk0</bpmn:incoming>
       <bpmn:outgoing>Flow_0szve18</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_0szve18" sourceRef="createReader" targetRef="confirmReaderAccoung" />
@@ -86,51 +84,25 @@
       <bpmn:outgoing>Flow_0685fl8</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0685fl8" sourceRef="confirmReaderAccoung" targetRef="Event_06xvf04" />
-    <bpmn:exclusiveGateway id="Gateway_1kekvv8">
-      <bpmn:incoming>Flow_0ho2woo</bpmn:incoming>
-      <bpmn:outgoing>Flow_12zdywa</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0mb9yzs</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_12zdywa" name="Password &#10;OK" sourceRef="Gateway_1kekvv8" targetRef="createReader">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${password == repeatedPassword}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0mb9yzs" name="Entered passwords are not matching" sourceRef="Gateway_1kekvv8" targetRef="enterReaderAccountData">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${password != repeatedPassword}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rpfhk0" sourceRef="enterReaderAccountData" targetRef="createReader" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="reader-registration">
-      <bpmndi:BPMNEdge id="Flow_0ho2woo_di" bpmnElement="Flow_0ho2woo">
+      <bpmndi:BPMNEdge id="Flow_1rpfhk0_di" bpmnElement="Flow_1rpfhk0">
         <di:waypoint x="360" y="97" />
-        <di:waypoint x="415" y="97" />
+        <di:waypoint x="450" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0685fl8_di" bpmnElement="Flow_0685fl8">
+        <di:waypoint x="770" y="97" />
+        <di:waypoint x="892" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0szve18_di" bpmnElement="Flow_0szve18">
+        <di:waypoint x="550" y="97" />
+        <di:waypoint x="670" y="97" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0vizril_di" bpmnElement="Flow_0vizril">
         <di:waypoint x="188" y="97" />
         <di:waypoint x="260" y="97" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0szve18_di" bpmnElement="Flow_0szve18">
-        <di:waypoint x="630" y="97" />
-        <di:waypoint x="720" y="97" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0685fl8_di" bpmnElement="Flow_0685fl8">
-        <di:waypoint x="820" y="97" />
-        <di:waypoint x="892" y="97" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_12zdywa_di" bpmnElement="Flow_12zdywa">
-        <di:waypoint x="465" y="97" />
-        <di:waypoint x="530" y="97" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="469" y="66" width="49" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0mb9yzs_di" bpmnElement="Flow_0mb9yzs">
-        <di:waypoint x="440" y="122" />
-        <di:waypoint x="440" y="180" />
-        <di:waypoint x="310" y="180" />
-        <di:waypoint x="310" y="137" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="330" y="140" width="90" height="40" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="152" y="79" width="36" height="36" />
@@ -138,17 +110,14 @@
       <bpmndi:BPMNShape id="Activity_09pnvu8_di" bpmnElement="enterReaderAccountData">
         <dc:Bounds x="260" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1kekvv8_di" bpmnElement="Gateway_1kekvv8" isMarkerVisible="true">
-        <dc:Bounds x="415" y="72" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1hwg1tm_di" bpmnElement="createReader">
-        <dc:Bounds x="530" y="57" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_08gh3av_di" bpmnElement="confirmReaderAccoung">
-        <dc:Bounds x="720" y="57" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_06xvf04_di" bpmnElement="Event_06xvf04">
         <dc:Bounds x="892" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_08gh3av_di" bpmnElement="confirmReaderAccoung">
+        <dc:Bounds x="670" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hwg1tm_di" bpmnElement="createReader">
+        <dc:Bounds x="450" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
