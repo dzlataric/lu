@@ -80,11 +80,26 @@
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_0szve18" sourceRef="createReader" targetRef="confirmReaderAccoung" />
     <bpmn:userTask id="confirmReaderAccoung" name="Confirm reader account" camunda:assignee="${username}">
+      <bpmn:extensionElements>
+        <camunda:taskListener class="rs.ns.lu.feature.tasks.FinishRegistrationListener" event="complete" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0szve18</bpmn:incoming>
       <bpmn:outgoing>Flow_0685fl8</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0685fl8" sourceRef="confirmReaderAccoung" targetRef="Event_06xvf04" />
     <bpmn:sequenceFlow id="Flow_1rpfhk0" sourceRef="enterReaderAccountData" targetRef="createReader" />
+    <bpmn:subProcess id="Activity_09a3g59" triggeredByEvent="true">
+      <bpmn:sequenceFlow id="Flow_1ykphny" sourceRef="Event_0wpzk9q" targetRef="Event_0yblc8p" />
+      <bpmn:startEvent id="Event_0wpzk9q" name="Terminates process instance after 30 days">
+        <bpmn:outgoing>Flow_1ykphny</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_1xv53sx">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P30D</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="Event_0yblc8p">
+        <bpmn:incoming>Flow_1ykphny</bpmn:incoming>
+      </bpmn:endEvent>
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="reader-registration">
@@ -118,6 +133,22 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1hwg1tm_di" bpmnElement="createReader">
         <dc:Bounds x="450" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jd0uoj_di" bpmnElement="Activity_09a3g59" isExpanded="true">
+        <dc:Bounds x="325" y="220" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ykphny_di" bpmnElement="Flow_1ykphny">
+        <di:waypoint x="408" y="310" />
+        <di:waypoint x="582" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0yblc8p_di" bpmnElement="Event_0yblc8p">
+        <dc:Bounds x="582" y="292" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ezrv1y_di" bpmnElement="Event_0wpzk9q">
+        <dc:Bounds x="372" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="349" y="335" width="83" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
